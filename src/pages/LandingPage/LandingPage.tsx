@@ -1,13 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Navbar from '../../components/Navbar';
-import Hero from "../LandingPage/components/Hero";
-import HowItWorks from "../LandingPage/components/HowItWorks";
-import Features from "../LandingPage/components/Features";
-import Testimonials from "../LandingPage/components/Testimonials";
-import FAQ from "../LandingPage/components/FAQ";
+import Hero from "./components/Hero";
+import HowItWorks from "./components/HowItWorks";
+import Features from "./components/Features";
+import Testimonials from "./components/Testimonials";
+import FAQ from "./components/FAQ";
 import Footer from "../../components/Footer";
+import AuthModal from '../../components/AuthModal';
 
 const LandingPage: React.FC = () => {
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authModalView, setAuthModalView] = useState<'signin' | 'signup'>('signup');
+
+  const handleGetStarted = () => {
+    setAuthModalView('signup');
+    setAuthModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen relative">
       {/* Fixed background that spans the entire page */}
@@ -24,13 +33,20 @@ const LandingPage: React.FC = () => {
       
       <Navbar />
       <main className="relative z-10">
-        <Hero />
+        <Hero onGetStarted={handleGetStarted} />
         <HowItWorks />
         <Features />
         <Testimonials />
         <FAQ />
       </main>
       <Footer />
+      
+      {/* Auth Modal - This is a duplicate instance that can be triggered from the Hero section */}
+      <AuthModal 
+        isOpen={authModalOpen} 
+        onClose={() => setAuthModalOpen(false)} 
+        initialView={authModalView}
+      />
     </div>
   );
 };

@@ -1,8 +1,12 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { Heart, ArrowRight, LockKeyhole, Sparkles, Link as LinkIcon } from 'lucide-react';
 
-const Hero: React.FC = () => {
+interface HeroProps {
+  onGetStarted: () => void;
+}
+
+const Hero: React.FC<HeroProps> = ({ onGetStarted }) => {
   return (
     <div className="relative min-h-screen flex items-center pt-20 pb-12">
       {/* Subtle decorative elements */}
@@ -36,20 +40,20 @@ const Hero: React.FC = () => {
               </p>
 
               <div className="mt-10 flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0 animate-fade-in-up">
-                <Link
-                  to="/signup"
+                <button
+                  onClick={onGetStarted}
                   className="flex items-center justify-center rounded-full bg-gradient-to-r from-primary-600 to-primary-500 px-8 py-3.5 text-base font-medium text-white shadow-md hover:shadow-lg hover:from-primary-500 hover:to-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-secondary-900 transition-all duration-300 transform hover:scale-105"
                 >
                   Start sharing
                   <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-                <Link
-                  to="/learn-more"
+                </button>
+                <a
+                  href="#how-it-works"
                   className="flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm px-8 py-3.5 text-base font-medium text-white shadow-md hover:shadow-lg ring-1 ring-white/20 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-secondary-900 transition-all duration-300"
                 >
                   <LockKeyhole className="mr-2 h-5 w-5" />
                   See how it works
-                </Link>
+                </a>
               </div>
 
               <div className="mt-12 animate-fade-in-up">

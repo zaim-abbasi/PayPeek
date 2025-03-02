@@ -1,10 +1,27 @@
-import React, { createContext, useContext, ReactNode, useState } from 'react';
+import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
+import { createClient, SupabaseClient, User, Session } from '@supabase/supabase-js';
+
+// Initialize Supabase client
+const supabaseUrl = 'https://siktauruxrdfvgvefolq.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNpa3RhdXJ1eHJkZnZndmVmb2xxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4OTgxMzksImV4cCI6MjA1NjQ3NDEzOX0.S32Rg1jnm_sdWFYr4RYRdhBkmshvIjUa0XacvKM6Z6Q';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Define the shape of the context
 interface AuthContextType {
-  currentUser: any | null;
-  signInWithEmail: (email: string, password: string) => Promise<void>;
-  signUpWithEmail: (email: string, password: string, displayName: string) => Promise<void>;
+  supabase: SupabaseClient;
+  currentUser: User | null;
+  session: Session | null;
+  loading: boolean;
+  authSuccess: boolean;
+  setAuthSuccess: (value: boolean) => void;
+  signInWithEmail: (email: string, password: string) => Promise<{
+    error: Error | null;
+    data: any;
+  }>;
+  signUpWithEmail: (email: string, password: string, displayName: string) => Promise<{
+    error: Error | null;
+    data: any;
+  }>;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -23,36 +40,108 @@ export const useAuth = () => {
 
 // Provider component
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  // Mock user state for UI development
-  const [currentUser, setCurrentUser] = useState<any | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [authSuccess, setAuthSuccess] = useState(false);
 
-  // Mock auth functions
+  useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setCurrentUser(session?.user ?? null);
+      if (session?.user) {
+        setAuthSuccess(true);
+        // Reset success message after 5 seconds
+        setTimeout(() => setAuthSuccess(false), 5000);
+      }
+      setLoading(false);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setCurrentUser(session?.user ?? null);
+      if (session?.user) {
+        setAuthSuccess(true);
+        // Reset success message after 5 seconds
+        setTimeout(() => setAuthSuccess(false), 5000);
+      }
+      setLoading(false);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  // Auth functions
   const signInWithEmail = async (email: string, password: string) => {
-    console.log('Sign in with email:', email, password);
-    // This would be implemented with actual authentication later
-    return Promise.resolve();
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      return { data, error };
+    } catch (error) {
+      console.error('Error signing in:', error);
+      return { data: null, error: error as Error };
+    }
   };
 
   const signUpWithEmail = async (email: string, password: string, displayName: string) => {
-    console.log('Sign up with email:', email, password, displayName);
-    // This would be implemented with actual authentication later
-    return Promise.resolve();
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            display_name: displayName,
+          },
+        },
+      });
+      
+      return { data, error };
+    } catch (error) {
+      console.error('Error signing up:', error);
+      return { data: null, error: error as Error };
+    }
   };
 
   const signInWithGoogle = async () => {
-    console.log('Sign in with Google');
-    // This would be implemented with actual authentication later
-    return Promise.resolve();
+    try {
+      await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin,
+          queryParams: {
+            prompt: 'select_account',
+          },
+        },
+      });
+    } catch (error) {
+      console.error('Error signing in with Google:', error);
+      throw error;
+    }
   };
 
   const signOut = async () => {
-    console.log('Sign out');
-    // This would be implemented with actual authentication later
-    return Promise.resolve();
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Error signing out:', error);
+      throw error;
+    }
   };
 
   const value = {
+    supabase,
     currentUser,
+    session,
+    loading,
+    authSuccess,
+    setAuthSuccess,
     signInWithEmail,
     signUpWithEmail,
     signInWithGoogle,

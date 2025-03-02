@@ -13,7 +13,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onToggleView }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { signInWithEmail, signInWithGoogle } = useAuth();
+  const { signInWithEmail, signInWithGoogle, setAuthSuccess } = useAuth();
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,8 +26,13 @@ const SignInForm: React.FC<SignInFormProps> = ({ onToggleView }) => {
     
     try {
       setIsSubmitting(true);
-      await signInWithEmail(email, password);
-      // Navigation would be handled after backend implementation
+      const { error, data } = await signInWithEmail(email, password);
+      
+      if (error) {
+        setError(error.message || 'Failed to sign in');
+      } else if (data) {
+        setAuthSuccess(true);
+      }
       setIsSubmitting(false);
     } catch (err: any) {
       setError(err.message || 'Failed to sign in');
@@ -40,7 +45,6 @@ const SignInForm: React.FC<SignInFormProps> = ({ onToggleView }) => {
       setIsSubmitting(true);
       setError('');
       await signInWithGoogle();
-      // Navigation would be handled after backend implementation
       setIsSubmitting(false);
     } catch (err: any) {
       setError(err.message || 'Failed to sign in with Google');
@@ -49,24 +53,18 @@ const SignInForm: React.FC<SignInFormProps> = ({ onToggleView }) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div className="text-center">
         <div className="flex justify-center">
           <div className="flex items-center justify-center h-12 w-12 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 shadow-md">
             <Heart className="h-6 w-6 text-white" />
           </div>
         </div>
-        <h2 className="mt-4 text-center text-2xl font-bold text-white">
-          Sign in to your account
+        <h2 className="mt-3 text-center text-2xl font-bold text-white">
+          Welcome back
         </h2>
-        <p className="mt-2 text-center text-sm text-secondary-200">
-          Or{' '}
-          <button 
-            onClick={onToggleView}
-            className="font-medium text-primary-400 hover:text-primary-300 transition-colors"
-          >
-            create a new account
-          </button>
+        <p className="mt-1 text-center text-sm text-secondary-300">
+          Sign in to continue to PayPeek
         </p>
       </div>
       
@@ -74,20 +72,19 @@ const SignInForm: React.FC<SignInFormProps> = ({ onToggleView }) => {
         <motion.div 
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-red-500/20 border border-red-500/50 rounded-lg p-3 flex items-start"
+          className="bg-red-500/20 border border-red-500/50 rounded-lg p-3 flex items-start shadow-md backdrop-blur-sm"
         >
-          <AlertCircle className="h-5 w-5 text-red-400 mr-2 mt-0.5 flex-shrink-0" />
-          <p className="text-sm text-red-200">{error}</p>
+          <AlertCircle className="h-5 w-5 text-red-400 mr-2.5 mt-0.5 flex-shrink-0" />
+          <p className="text-sm text-red-200 font-medium">{error}</p>
         </motion.div>
       )}
       
-      <form className="space-y-6" onSubmit={handleEmailSignIn}>
-        <div className="rounded-md shadow-sm -space-y-px">
+      <form className="space-y-4" onSubmit={handleEmailSignIn}>
+        <div className="space-y-3">
           <div>
-            <label htmlFor="email-address" className="sr-only">Email address</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Mail className="h-5 w-5 text-secondary-400" />
+                <Mail className="h-5 w-5 text-primary-400" />
               </div>
               <input
                 id="email-address"
@@ -97,16 +94,15 @@ const SignInForm: React.FC<SignInFormProps> = ({ onToggleView }) => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none rounded-t-md relative block w-full px-3 py-3 pl-10 border border-white/20 placeholder-secondary-400 text-white bg-white/5 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-lg relative block w-full px-3 py-2.5 pl-10 border border-white/20 placeholder-secondary-400 text-white bg-secondary-800/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:z-10 text-sm shadow-sm backdrop-blur-sm transition-all duration-200"
                 placeholder="Email address"
               />
             </div>
           </div>
           <div>
-            <label htmlFor="password" className="sr-only">Password</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock className="h-5 w-5 text-secondary-400" />
+                <Lock className="h-5 w-5 text-primary-400" />
               </div>
               <input
                 id="password"
@@ -116,7 +112,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onToggleView }) => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none rounded-b-md relative block w-full px-3 py-3 pl-10 border border-white/20 placeholder-secondary-400 text-white bg-white/5 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-lg relative block w-full px-3 py-2.5 pl-10 border border-white/20 placeholder-secondary-400 text-white bg-secondary-800/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:z-10 text-sm shadow-sm backdrop-blur-sm transition-all duration-200"
                 placeholder="Password"
               />
             </div>
@@ -129,16 +125,15 @@ const SignInForm: React.FC<SignInFormProps> = ({ onToggleView }) => {
               id="remember-me"
               name="remember-me"
               type="checkbox"
-              className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-secondary-300 rounded"
+              className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-secondary-500 rounded bg-secondary-800/50"
             />
-            <label htmlFor="remember-me" className="ml-2 block text-sm text-secondary-200">
+            <label htmlFor="remember-me" className="ml-2 block text-sm text-secondary-300">
               Remember me
             </label>
           </div>
-
           <div className="text-sm">
             <Link to="/forgot-password" className="font-medium text-primary-400 hover:text-primary-300 transition-colors">
-              Forgot password?
+              Forgot?
             </Link>
           </div>
         </div>
@@ -147,7 +142,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onToggleView }) => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="group relative w-full flex justify-center py-3 px-4 border border-transparent rounded-md text-white bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 font-medium shadow-sm hover:shadow-md transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
+            className="group relative w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg text-white bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 font-medium shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
           >
             <span className="absolute left-0 inset-y-0 flex items-center pl-3">
               <LogIn className="h-5 w-5 text-primary-300 group-hover:text-primary-200" />
@@ -163,16 +158,16 @@ const SignInForm: React.FC<SignInFormProps> = ({ onToggleView }) => {
             <div className="w-full border-t border-white/20"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-secondary-900/50 backdrop-blur-sm text-secondary-300">Or continue with</span>
+            <span className="px-2.5 py-0.5 bg-gradient-to-r from-secondary-900/80 to-primary-950/80 backdrop-blur-sm text-secondary-300 rounded-full">or</span>
           </div>
         </div>
 
-        <div className="mt-6">
+        <div className="mt-4">
           <button
             type="button"
             onClick={handleGoogleSignIn}
             disabled={isSubmitting}
-            className="w-full flex justify-center items-center px-4 py-3 border border-white/20 rounded-md shadow-sm text-sm font-medium text-white bg-white/5 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-full flex justify-center items-center px-4 py-2.5 border border-white/20 rounded-lg shadow-md text-sm font-medium text-white bg-white/5 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed backdrop-blur-sm"
           >
             <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
               <path
@@ -180,9 +175,21 @@ const SignInForm: React.FC<SignInFormProps> = ({ onToggleView }) => {
                 d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"
               />
             </svg>
-            Sign in with Google
+            Continue with Google
           </button>
         </div>
+      </div>
+      
+      <div className="text-center mt-4">
+        <p className="text-sm text-secondary-300">
+          Don't have an account?{' '}
+          <button 
+            onClick={onToggleView}
+            className="font-medium text-primary-400 hover:text-primary-300 transition-colors"
+          >
+            Sign up
+          </button>
+        </p>
       </div>
     </div>
   );

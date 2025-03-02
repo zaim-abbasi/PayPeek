@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
+import { X, CheckCircle } from 'lucide-react';
 import SignInForm from './SignInForm';
 import SignUpForm from './SignUpForm';
+import { useAuth } from '../context/AuthContext';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -12,6 +13,7 @@ interface AuthModalProps {
 
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialView = 'signin' }) => {
   const [view, setView] = useState<'signin' | 'signup'>(initialView);
+  const { authSuccess, setAuthSuccess, currentUser } = useAuth();
 
   // Reset to initial view when modal is closed
   useEffect(() => {
@@ -25,6 +27,18 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialView = 's
       setView(initialView);
     }
   }, [isOpen, initialView]);
+
+  // Close modal when auth is successful
+  useEffect(() => {
+    if (authSuccess && isOpen) {
+      const timer = setTimeout(() => {
+        onClose();
+        // Reset success state after modal closes
+        setTimeout(() => setAuthSuccess(false), 300);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [authSuccess, isOpen, onClose, setAuthSuccess]);
 
   const handleViewToggle = () => {
     setView(view === 'signin' ? 'signup' : 'signin');
@@ -95,17 +109,37 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialView = 's
             variants={modalVariants}
           >
             <div 
-              className="w-full max-w-md bg-white/10 backdrop-blur-sm rounded-xl shadow-2xl border border-white/20 overflow-hidden"
+              className="w-full max-w-md bg-gradient-to-br from-secondary-900 to-primary-950 rounded-xl shadow-2xl border border-white/20 overflow-hidden relative"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Close button */}
+              {/* Close button - positioned in the top right corner */}
               <button
                 onClick={onClose}
-                className="absolute top-4 right-4 text-secondary-300 hover:text-white transition-colors z-10"
+                className="absolute top-4 right-4 text-secondary-300 hover:text-white transition-colors z-10 bg-secondary-800/50 p-1.5 rounded-full backdrop-blur-sm"
                 aria-label="Close modal"
               >
-                <X className="h-6 w-6" />
+                <X className="h-5 w-5" />
               </button>
+              
+              {/* Success message overlay */}
+              <AnimatePresence>
+                {authSuccess && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-gradient-to-br from-secondary-900/95 to-primary-950/95 backdrop-blur-sm"
+                  >
+                    <div className="bg-green-500/20 border border-green-500/30 rounded-full p-3 mb-4">
+                      <CheckCircle className="h-12 w-12 text-green-400" />
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-2">Authentication Successful!</h3>
+                    <p className="text-secondary-200">
+                      Welcome{currentUser?.user_metadata?.display_name ? `, ${currentUser.user_metadata.display_name}` : ''}!
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
               
               {/* Content */}
               <div className="p-6">

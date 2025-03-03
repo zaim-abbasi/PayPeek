@@ -32,6 +32,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onToggleView }) => {
         setError(error.message || 'Failed to sign in');
       } else if (data) {
         setAuthSuccess(true);
+        // No need to navigate here - AuthModal will handle redirection
       }
       setIsSubmitting(false);
     } catch (err: any) {

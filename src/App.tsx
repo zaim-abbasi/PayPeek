@@ -1,9 +1,31 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LandingPage from './pages/LandingPage/LandingPage';
-import { AuthProvider } from './context/AuthContext';
+import Dashboard from './pages/Dashboard/Dashboard';
+import { AuthProvider, useAuth } from './context/AuthContext';
 
-function App() {
+// Protected route component
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { currentUser, loading } = useAuth();
+  
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-secondary-950 via-secondary-900 to-primary-950">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+      </div>
+    );
+  }
+  
+  if (!currentUser) {
+    return <Navigate to="/" />;
+  }
+  
+  return <>{children}</>;
+};
+
+function AppRoutes() {
+  const { currentUser, authSuccess } = useAuth();
+  
   // Smooth scroll behavior for anchor links
   useEffect(() => {
     const handleAnchorClick = (e: MouseEvent) => {
@@ -27,11 +49,27 @@ function App() {
   }, []);
 
   return (
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route 
+        path="/dashboard" 
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } 
+      />
+      {/* Redirect to dashboard if user is already authenticated */}
+      {currentUser && <Route path="*" element={<Navigate to="/dashboard" />} />}
+    </Routes>
+  );
+}
+
+function App() {
+  return (
     <AuthProvider>
       <Router>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-        </Routes>
+        <AppRoutes />
       </Router>
     </AuthProvider>
   );

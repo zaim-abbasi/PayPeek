@@ -49,6 +49,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onToggleView }) => {
         setError(error.message || 'Failed to create account');
       } else if (data) {
         setAuthSuccess(true);
+        // No need to navigate here - AuthModal will handle redirection
       }
       setIsSubmitting(false);
     } catch (err: any) {

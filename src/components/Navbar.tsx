@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Heart, ChevronRight, Menu, X } from 'lucide-react';
+import { Heart, ChevronRight, Menu, X, User, LogOut } from 'lucide-react';
 import AuthModal from './AuthModal';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalView, setAuthModalView] = useState<'signin' | 'signup'>('signin');
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const { currentUser, signOut } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,6 +38,21 @@ const Navbar: React.FC = () => {
     setAuthModalView('signup');
     setAuthModalOpen(true);
     setMobileMenuOpen(false);
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      setUserMenuOpen(false);
+      navigate('/');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  const navigateToDashboard = () => {
+    navigate('/dashboard');
+    setUserMenuOpen(false);
   };
 
   return (
@@ -72,26 +91,60 @@ const Navbar: React.FC = () => {
             </div>
             
             <div className="flex items-center space-x-3 sm:space-x-4">
-              <div className="hidden sm:block">
-                <button
-                  onClick={openSignIn}
-                  className="flex items-center px-6 py-2.5 rounded-full bg-white/10 text-white font-medium border border-white/20 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-primary-950 transition-all duration-300 shadow-sm backdrop-blur-sm"
-                  aria-label="Sign in to your account"
-                >
-                  <span>Sign In</span>
-                </button>
-              </div>
-              
-              <div>
-                <button
-                  onClick={openSignUp}
-                  className="flex items-center px-6 py-2.5 rounded-full bg-gradient-to-r from-primary-600 to-primary-500 text-white font-medium shadow-md hover:shadow-lg hover:from-primary-500 hover:to-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-300"
-                  aria-label="Create an account"
-                >
-                  <span>Get Started</span>
-                  <ChevronRight className="ml-1.5 h-4 w-4" />
-                </button>
-              </div>
+              {currentUser ? (
+                <div className="relative">
+                  <button
+                    onClick={() => setUserMenuOpen(!userMenuOpen)}
+                    className="flex items-center space-x-2 px-4 py-2 rounded-full bg-white/10 text-white font-medium border border-white/20 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-primary-950 transition-all duration-300 shadow-sm backdrop-blur-sm"
+                  >
+                    <span className="hidden sm:inline-block">
+                      {currentUser.user_metadata?.display_name || currentUser.email?.split('@')[0]}
+                    </span>
+                    <User className="h-5 w-5" />
+                  </button>
+                  
+                  {userMenuOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-gradient-to-br from-secondary-900 to-primary-950 rounded-lg shadow-lg py-1 border border-white/10 backdrop-blur-sm z-50">
+                      <button
+                        onClick={navigateToDashboard}
+                        className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors"
+                      >
+                        Dashboard
+                      </button>
+                      <button
+                        onClick={handleSignOut}
+                        className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors flex items-center"
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Sign out
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <>
+                  <div className="hidden sm:block">
+                    <button
+                      onClick={openSignIn}
+                      className="flex items-center px-6 py-2.5 rounded-full bg-white/10 text-white font-medium border border-white/20 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-primary-950 transition-all duration-300 shadow-sm backdrop-blur-sm"
+                      aria-label="Sign in to your account"
+                    >
+                      <span>Sign In</span>
+                    </button>
+                  </div>
+                  
+                  <div>
+                    <button
+                      onClick={openSignUp}
+                      className="flex items-center px-6 py-2.5 rounded-full bg-gradient-to-r from-primary-600 to-primary-500 text-white font-medium shadow-md hover:shadow-lg hover:from-primary-500 hover:to-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-300"
+                      aria-label="Create an account"
+                    >
+                      <span>Get Started</span>
+                      <ChevronRight className="ml-1.5 h-4 w-4" />
+                    </button>
+                  </div>
+                </>
+              )}
               
               <button
                 type="button"
@@ -141,20 +194,40 @@ const Navbar: React.FC = () => {
               >
                 FAQ
               </a>
-              <button
-                onClick={openSignIn}
-                className="block w-full text-left px-4 py-3 rounded-lg text-base font-medium text-primary-300 hover:text-primary-200 hover:bg-white/5 transition-all duration-200"
-              >
-                Sign In
-              </button>
-              <div className="pt-2 pb-1">
-                <button
-                  onClick={openSignUp}
-                  className="block w-full text-center px-4 py-3 rounded-lg bg-gradient-to-r from-primary-600 to-primary-500 text-white font-medium shadow-sm hover:shadow-md transition-all duration-200"
-                >
-                  Get Started
-                </button>
-              </div>
+              
+              {currentUser ? (
+                <>
+                  <button
+                    onClick={navigateToDashboard}
+                    className="block w-full text-left px-4 py-3 rounded-lg text-base font-medium text-primary-300 hover:text-primary-200 hover:bg-white/5 transition-all duration-200"
+                  >
+                    Dashboard
+                  </button>
+                  <button
+                    onClick={handleSignOut}
+                    className="block w-full text-left px-4 py-3 rounded-lg text-base font-medium text-primary-300 hover:text-primary-200 hover:bg-white/5 transition-all duration-200"
+                  >
+                    Sign Out
+                  </button>
+                 </>
+              ) : (
+                <>
+                  <button
+                    onClick={openSignIn}
+                    className="block w-full text-left px-4 py-3 rounded-lg text-base font-medium text-primary-300 hover:text-primary-200 hover:bg-white/5 transition-all duration-200"
+                  >
+                    Sign In
+                  </button>
+                  <div className="pt-2 pb-1">
+                    <button
+                      onClick={openSignUp}
+                      className="block w-full text-center px-4 py-3 rounded-lg bg-gradient-to-r from-primary-600 to-primary-500 text-white font-medium shadow-sm hover:shadow-md transition-all duration-200"
+                    >
+                      Get Started
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}

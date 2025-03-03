@@ -4,6 +4,7 @@ import { X, CheckCircle } from 'lucide-react';
 import SignInForm from './SignInForm';
 import SignUpForm from './SignUpForm';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -14,6 +15,7 @@ interface AuthModalProps {
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialView = 'signin' }) => {
   const [view, setView] = useState<'signin' | 'signup'>(initialView);
   const { authSuccess, setAuthSuccess, currentUser } = useAuth();
+  const navigate = useNavigate();
 
   // Reset to initial view when modal is closed
   useEffect(() => {
@@ -28,17 +30,29 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialView = 's
     }
   }, [isOpen, initialView]);
 
-  // Close modal when auth is successful
+  // Close modal when auth is successful and redirect to dashboard
   useEffect(() => {
     if (authSuccess && isOpen) {
       const timer = setTimeout(() => {
         onClose();
         // Reset success state after modal closes
-        setTimeout(() => setAuthSuccess(false), 300);
-      }, 2000);
+        setTimeout(() => {
+          setAuthSuccess(false);
+          // Redirect to dashboard
+          navigate('/dashboard');
+        }, 300);
+      }, 1500); // Reduced from 2000ms to 1500ms for faster redirection
       return () => clearTimeout(timer);
     }
-  }, [authSuccess, isOpen, onClose, setAuthSuccess]);
+  }, [authSuccess, isOpen, onClose, setAuthSuccess, navigate]);
+
+  // Automatically redirect to dashboard if user is already authenticated
+  useEffect(() => {
+    if (currentUser && isOpen) {
+      navigate('/dashboard');
+      onClose();
+    }
+  }, [currentUser, isOpen, navigate, onClose]);
 
   const handleViewToggle = () => {
     setView(view === 'signin' ? 'signup' : 'signin');
@@ -137,6 +151,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialView = 's
                     <p className="text-secondary-200">
                       Welcome{currentUser?.user_metadata?.display_name ? `, ${currentUser.user_metadata.display_name}` : ''}!
                     </p>
+                    <p className="text-secondary-300 text-sm mt-2">Redirecting to dashboard...</p>
                   </motion.div>
                 )}
               </AnimatePresence>

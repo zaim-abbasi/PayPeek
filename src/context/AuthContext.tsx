@@ -1,5 +1,6 @@
 import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import { createClient, SupabaseClient, User, Session } from '@supabase/supabase-js';
+import { useNavigate } from 'react-router-dom';
 
 // Initialize Supabase client
 const supabaseUrl = 'https://siktauruxrdfvgvefolq.supabase.co';
@@ -50,11 +51,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setCurrentUser(session?.user ?? null);
-      if (session?.user) {
-        setAuthSuccess(true);
-        // Reset success message after 5 seconds
-        setTimeout(() => setAuthSuccess(false), 5000);
-      }
       setLoading(false);
     });
 
@@ -62,11 +58,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setCurrentUser(session?.user ?? null);
-      if (session?.user) {
-        setAuthSuccess(true);
-        // Reset success message after 5 seconds
-        setTimeout(() => setAuthSuccess(false), 5000);
-      }
       setLoading(false);
     });
 
@@ -82,6 +73,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         email,
         password,
       });
+      
+      if (data.user) {
+        setAuthSuccess(true);
+      }
       
       return { data, error };
     } catch (error) {
@@ -101,6 +96,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           },
         },
       });
+      
+      if (data.user) {
+        setAuthSuccess(true);
+      }
       
       return { data, error };
     } catch (error) {

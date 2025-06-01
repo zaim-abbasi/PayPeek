@@ -56,18 +56,11 @@ const HowItWorks: React.FC = () => {
         </div>
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-          {steps.map((step, index) => (
+          {steps.map((step) => (
             <div
               key={step.id}
               className="relative"
             >
-              {/* Connecting line between steps */}
-              {step.id < steps.length && (
-                <div className="hidden lg:block absolute top-1/2 left-full w-16 h-0.5 bg-gradient-to-r from-primary-400 to-primary-200 transform -translate-x-6 -translate-y-8 z-0">
-                  <div className="absolute right-0 w-3 h-3 rounded-full bg-primary-500 transform -translate-y-1/2 shadow-md z-10"></div>
-                </div>
-              )}
-
               <div className="flex flex-col items-center text-center bg-white/10 backdrop-blur-sm rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 h-full border border-white/10 group relative z-20 hover:-translate-y-2">
                 <div
                   className={`flex items-center justify-center h-16 w-16 rounded-full ${step.iconBg} mb-6 shadow-md group-hover:shadow-lg transition-all duration-300`}

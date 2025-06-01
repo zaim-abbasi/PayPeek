@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Mail, Lock, LogIn, AlertCircle } from 'lucide-react';
+import { Heart, AlertCircle, LogIn } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -82,55 +82,51 @@ const SignInForm: React.FC<SignInFormProps> = ({ onToggleView }) => {
       <form className="space-y-4" onSubmit={handleEmailSignIn}>
         <div className="space-y-3">
           <div>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Mail className="h-5 w-5 text-white/70" />
-              </div>
-              <input
-                id="email-address"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none rounded-lg relative block w-full px-3 py-2.5 pl-10 border border-white/20 placeholder-secondary-400 text-white bg-secondary-800/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:z-10 text-sm shadow-sm backdrop-blur-sm transition-all duration-200"
-                placeholder="Email address"
-              />
-            </div>
+            <input
+              id="email-address"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="appearance-none rounded-lg relative block w-full px-4 py-3 border border-white/20 placeholder-secondary-400 text-white bg-secondary-800/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:z-10 text-sm shadow-sm backdrop-blur-sm transition-all duration-200"
+              placeholder="Email address"
+            />
           </div>
           <div>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock className="h-5 w-5 text-white/70" />
-              </div>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none rounded-lg relative block w-full px-3 py-2.5 pl-10 border border-white/20 placeholder-secondary-400 text-white bg-secondary-800/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:z-10 text-sm shadow-sm backdrop-blur-sm transition-all duration-200"
-                placeholder="Password"
-              />
-            </div>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="appearance-none rounded-lg relative block w-full px-4 py-3 border border-white/20 placeholder-secondary-400 text-white bg-secondary-800/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:z-10 text-sm shadow-sm backdrop-blur-sm transition-all duration-200"
+              placeholder="Password"
+            />
           </div>
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <input
-              id="remember-me"
-              name="remember-me"
-              type="checkbox"
-              className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-secondary-500 rounded bg-secondary-800/50"
-            />
-            <label htmlFor="remember-me" className="ml-2 block text-sm text-secondary-300">
-              Remember me
-            </label>
-          </div>
+          <label className="flex items-center">
+            <div className="relative">
+              <input
+                id="remember-me"
+                name="remember-me"
+                type="checkbox"
+                className="sr-only peer"
+              />
+              <div className="h-5 w-5 border-2 border-secondary-500 rounded peer-checked:bg-primary-500 peer-checked:border-primary-500 transition-all duration-200"></div>
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 peer-checked:opacity-100 transition-opacity duration-200">
+                <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            </div>
+            <span className="ml-2 text-sm text-secondary-300">Remember me</span>
+          </label>
           <div className="text-sm">
             <Link to="/forgot-password" className="font-medium text-primary-400 hover:text-primary-300 transition-colors">
               Forgot?
@@ -142,7 +138,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onToggleView }) => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="group relative w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg text-white bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 font-medium shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
+            className="group relative w-full flex justify-center py-3 px-4 border border-transparent rounded-lg text-white bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 font-medium shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
           >
             <span className="absolute left-0 inset-y-0 flex items-center pl-3">
               <LogIn className="h-5 w-5 text-primary-300 group-hover:text-primary-200" />
@@ -167,7 +163,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onToggleView }) => {
             type="button"
             onClick={handleGoogleSignIn}
             disabled={isSubmitting}
-            className="w-full flex justify-center items-center px-4 py-2.5 border border-white/20 rounded-lg shadow-md text-sm font-medium text-white bg-white/5 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed backdrop-blur-sm"
+            className="w-full flex justify-center items-center px-4 py-3 border border-white/20 rounded-lg shadow-md text-sm font-medium text-white bg-white/5 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed backdrop-blur-sm"
           >
             <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
               <path

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Mail, Lock, User, UserPlus, AlertCircle } from 'lucide-react';
+import { Heart, AlertCircle, UserPlus } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 interface SignUpFormProps {
@@ -17,7 +17,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onToggleView }) => {
   const { signUpWithEmail, signInWithGoogle, setAuthSuccess } = useAuth();
 
   const validatePassword = (password: string): boolean => {
-    // Password must be at least 8 characters with at least one uppercase, one lowercase, and one number
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
     return passwordRegex.test(password);
   };
@@ -97,72 +96,52 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onToggleView }) => {
       
       <form className="space-y-4" onSubmit={handleEmailSignUp}>
         <div className="grid grid-cols-1 gap-3">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <User className="h-5 w-5 text-white/70" />
-            </div>
-            <input
-              id="display-name"
-              name="display-name"
-              type="text"
-              required
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-              className="appearance-none rounded-lg relative block w-full px-3 py-2.5 pl-10 border border-white/20 placeholder-secondary-400 text-white bg-secondary-800/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:z-10 text-sm shadow-sm backdrop-blur-sm transition-all duration-200"
-              placeholder="Full name"
-            />
-          </div>
+          <input
+            id="display-name"
+            name="display-name"
+            type="text"
+            required
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            className="appearance-none rounded-lg relative block w-full px-4 py-3 border border-white/20 placeholder-secondary-400 text-white bg-secondary-800/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:z-10 text-sm shadow-sm backdrop-blur-sm transition-all duration-200"
+            placeholder="Full name"
+          />
           
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Mail className="h-5 w-5 text-white/70" />
-            </div>
-            <input
-              id="email-address"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="appearance-none rounded-lg relative block w-full px-3 py-2.5 pl-10 border border-white/20 placeholder-secondary-400 text-white bg-secondary-800/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:z-10 text-sm shadow-sm backdrop-blur-sm transition-all duration-200"
-              placeholder="Email address"
-            />
-          </div>
+          <input
+            id="email-address"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="appearance-none rounded-lg relative block w-full px-4 py-3 border border-white/20 placeholder-secondary-400 text-white bg-secondary-800/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:z-10 text-sm shadow-sm backdrop-blur-sm transition-all duration-200"
+            placeholder="Email address"
+          />
           
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Lock className="h-5 w-5 text-white/70" />
-            </div>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="new-password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="appearance-none rounded-lg relative block w-full px-3 py-2.5 pl-10 border border-white/20 placeholder-secondary-400 text-white bg-secondary-800/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:z-10 text-sm shadow-sm backdrop-blur-sm transition-all duration-200"
-              placeholder="Password"
-            />
-          </div>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            autoComplete="new-password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="appearance-none rounded-lg relative block w-full px-4 py-3 border border-white/20 placeholder-secondary-400 text-white bg-secondary-800/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:z-10 text-sm shadow-sm backdrop-blur-sm transition-all duration-200"
+            placeholder="Password"
+          />
           
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Lock className="h-5 w-5 text-white/70" />
-            </div>
-            <input
-              id="confirm-password"
-              name="confirm-password"
-              type="password"
-              autoComplete="new-password"
-              required
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="appearance-none rounded-lg relative block w-full px-3 py-2.5 pl-10 border border-white/20 placeholder-secondary-400 text-white bg-secondary-800/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:z-10 text-sm shadow-sm backdrop-blur-sm transition-all duration-200"
-              placeholder="Confirm password"
-            />
-          </div>
+          <input
+            id="confirm-password"
+            name="confirm-password"
+            type="password"
+            autoComplete="new-password"
+            required
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className="appearance-none rounded-lg relative block w-full px-4 py-3 border border-white/20 placeholder-secondary-400 text-white bg-secondary-800/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:z-10 text-sm shadow-sm backdrop-blur-sm transition-all duration-200"
+            placeholder="Confirm password"
+          />
         </div>
         
         <p className="text-xs text-secondary-400 mt-1">
@@ -173,7 +152,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onToggleView }) => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="group relative w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg text-white bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 font-medium shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
+            className="group relative w-full flex justify-center py-3 px-4 border border-transparent rounded-lg text-white bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 font-medium shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
           >
             <span className="absolute left-0 inset-y-0 flex items-center pl-3">
               <UserPlus className="h-5 w-5 text-primary-300 group-hover:text-primary-200" />
@@ -197,7 +176,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onToggleView }) => {
           <button
             onClick={handleGoogleSignUp}
             disabled={isSubmitting}
-            className="w-full flex justify-center items-center px-4 py-2.5 border border-white/20 rounded-lg shadow-md text-sm font-medium text-white bg-white/5 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed backdrop-blur-sm"
+            className="w-full flex justify-center items-center px-4 py-3 border border-white/20 rounded-lg shadow-md text-sm font-medium text-white bg-white/5 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed backdrop-blur-sm"
           >
             <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
               <path

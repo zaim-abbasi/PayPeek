@@ -1,0 +1,26 @@
+Paypeek
+
+Login:
+Login ke baad direct to dashboard instead of manually going to the dashboard
+
+Dashboard:
+only 3 options (overview, collections, sales)
+settings(profile)
+
+overview: minimal, remove monthly earning table, top collections
+
+
+collections:
+when we click on a collection tile, a dialogue box appears.
+in that dialogu box, keep files like UI. like the items(images, video) in that collection in a grid type layout
+
+
+move price, expiry, items, etc, etc in a row at the top with a gear (settings) icon
+
+
+settings
+in a profile in top right corner
+
+
+
+-> responsiveness on mobile
